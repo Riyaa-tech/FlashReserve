@@ -1,0 +1,6 @@
+{
+  "PK": {"S": "EVENT#flashreserve-test-event-001"},
+  "SK": {"S": "INVENTORY#GENERAL"},
+  "availableQuantity": {"N": "10"},
+  "status": {"S": "ACTIVE"}
+}

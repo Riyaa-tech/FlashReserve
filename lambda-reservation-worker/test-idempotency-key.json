@@ -1,0 +1,4 @@
+{
+  "PK": {"S": "IDEMPOTENCY#flashreserve-test-idempotency-001"},
+  "SK": {"S": "REQUEST"}
+}

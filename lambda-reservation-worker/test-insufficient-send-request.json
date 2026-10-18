@@ -1,0 +1,6 @@
+{
+    "QueueUrl":  "https://sqs.ap-south-1.amazonaws.com/441541652921/flashreserve-reservations.fifo",
+    "MessageBody":  "{\r\n    \"reservationId\":  \"flashreserve-test-reservation-insufficient-001\",\r\n    \"eventId\":  \"flashreserve-test-event-001\",\r\n    \"customerId\":  \"flashreserve-test-customer-001\",\r\n    \"quantity\":  9,\r\n    \"idempotencyKey\":  \"flashreserve-test-idempotency-insufficient-001\"\r\n}",
+    "MessageGroupId":  "flashreserve-test-group-001",
+    "MessageDeduplicationId":  "flashreserve-test-insufficient-001"
+}

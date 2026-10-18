@@ -1,0 +1,14 @@
+{
+    "availableQuantity":  {
+                              "N":  "5"
+                          },
+    "status":  {
+                   "S":  "ACTIVE"
+               },
+    "PK":  {
+               "S":  "EVENT#flashreserve-test-race-001"
+           },
+    "SK":  {
+               "S":  "INVENTORY#GENERAL"
+           }
+}

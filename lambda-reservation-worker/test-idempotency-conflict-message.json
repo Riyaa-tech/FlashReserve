@@ -1,0 +1,7 @@
+{
+    "reservationId":  "flashreserve-race-reservation-conflict-001",
+    "eventId":  "flashreserve-test-race-001",
+    "customerId":  "flashreserve-race-customer-A",
+    "quantity":  1,
+    "idempotencyKey":  "flashreserve-race-idempotency-A"
+}

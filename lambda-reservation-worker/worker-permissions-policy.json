@@ -1,0 +1,28 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReservationTableAccess",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:TransactWriteItems",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:ConditionCheckItem"
+      ],
+      "Resource": "arn:aws:dynamodb:ap-south-1:<AWS_ACCOUNT_ID>:table/FlashReserveReservations"
+    },
+    {
+      "Sid": "ConsumeReservationMessages",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:ChangeMessageVisibility",
+        "sqs:GetQueueAttributes"
+      ],
+      "Resource": "arn:aws:sqs:ap-south-1:<AWS_ACCOUNT_ID>:flashreserve-reservations.fifo"
+    }
+  ]
+}

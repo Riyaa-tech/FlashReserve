@@ -1,0 +1,7 @@
+{
+    "reservationId":  "flashreserve-test-reservation-insufficient-001",
+    "eventId":  "flashreserve-test-event-001",
+    "customerId":  "flashreserve-test-customer-001",
+    "quantity":  9,
+    "idempotencyKey":  "flashreserve-test-idempotency-insufficient-001"
+}

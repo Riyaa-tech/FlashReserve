@@ -1,0 +1,8 @@
+{
+    "SK":  {
+               "S":  "REQUEST"
+           },
+    "PK":  {
+               "S":  "IDEMPOTENCY#flashreserve-test-idempotency-insufficient-001"
+           }
+}

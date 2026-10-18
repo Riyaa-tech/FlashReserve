@@ -1,0 +1,1 @@
+{"FifoQueue":"true","VisibilityTimeout":"180","RedrivePolicy":"{\"deadLetterTargetArn\":\"arn:aws:sqs:ap-south-1:<AWS_ACCOUNT_ID>:flashreserve-reservations-dlq.fifo\",\"maxReceiveCount\":\"5\"}","ContentBasedDeduplication":"false"}

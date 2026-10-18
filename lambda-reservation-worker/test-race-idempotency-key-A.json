@@ -1,0 +1,8 @@
+{
+    "PK":  {
+               "S":  "IDEMPOTENCY#flashreserve-race-idempotency-A"
+           },
+    "SK":  {
+               "S":  "REQUEST"
+           }
+}

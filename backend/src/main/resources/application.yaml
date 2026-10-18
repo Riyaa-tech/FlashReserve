@@ -1,0 +1,27 @@
+
+spring:
+  application:
+    name: flashreserve-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flashreserve
+    username: flashreserve_user
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+server:
+  port: 8080
