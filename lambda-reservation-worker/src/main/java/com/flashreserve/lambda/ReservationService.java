@@ -1,5 +1,6 @@
 package com.flashreserve.lambda;
 
+import com.amazonaws.services.lambda.runtime.LambdaRuntime;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
@@ -9,16 +10,21 @@ import software.amazon.awssdk.services.dynamodb.model.TransactWriteItemsRequest;
 import software.amazon.awssdk.services.dynamodb.model.TransactionCanceledException;
 import software.amazon.awssdk.services.dynamodb.model.Update;
 import software.amazon.awssdk.services.dynamodb.model.ConditionCheck;
+import software.amazon.awssdk.services.dynamodb.model.CancellationReason;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ReservationService {
 
     private static final String INVENTORY_SK = "INVENTORY#GENERAL";
     private static final String DETAILS_SK = "DETAILS";
     private static final String IDEMPOTENCY_SK = "REQUEST";
+
+    /** Message used when an earlier recorded outcome is returned. */
+    static final String REPLAY_MESSAGE = "Returned previously recorded outcome";
 
     private final DynamoDbClient dynamoDb;
     private final String tableName;
@@ -94,6 +100,19 @@ public class ReservationService {
             "Reservation confirmed");
 
 } catch (TransactionCanceledException ex) {
+    /*
+     * Diagnostic: one cancellation code per transaction item, in order
+     * [inventory, reservation, idempotency]. For example
+     * [ConditionalCheckFailed, None, None] means stock was insufficient
+     * or the event was inactive.
+     */
+    LambdaRuntime.getLogger().log(
+            "RESERVATION_TXN_CANCELLED reservationId="
+                    + message.reservationId()
+                    + " eventId=" + message.eventId()
+                    + " reasons=" + cancellationCodes(ex)
+                    + System.lineSeparator());
+
     ReservationResult previous = findPreviousOutcome(
             message, idempotencyPk);
 
@@ -277,7 +296,19 @@ private ReservationResult recordRejectionIfUnavailable(
         return new ReservationResult(
                 message.reservationId(),
                 status,
-                "Returned previously recorded outcome");
+                REPLAY_MESSAGE);
+    }
+
+    private static String cancellationCodes(
+            TransactionCanceledException ex) {
+
+        if (!ex.hasCancellationReasons()) {
+            return "[]";
+        }
+
+        return ex.cancellationReasons().stream()
+                .map(CancellationReason::code)
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     private static void validate(ReservationMessage message) {

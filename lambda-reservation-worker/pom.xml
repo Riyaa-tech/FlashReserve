@@ -66,6 +66,19 @@
     <version>2.18.3</version>
 </dependency>
 
+        <!--
+            The AWS SDK logs through the SLF4J API but ships no provider,
+            which prints "Failed to load class StaticLoggerBinder" on every
+            cold start. slf4j-nop is a tiny no-op provider: it removes the
+            warning and keeps SDK-internal logs silent. Application logs use
+            the Lambda runtime logger and are not affected.
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>2.0.16</version>
+        </dependency>
+
 
     </dependencies>
 
