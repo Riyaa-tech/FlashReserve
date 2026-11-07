@@ -313,7 +313,8 @@ private ReservationResult recordRejectionIfUnavailable(
 
     private static void validate(ReservationMessage message) {
         if (message == null) {
-            throw new IllegalArgumentException("Message is required");
+            throw new InvalidReservationMessageException(
+                    "Message is required");
         }
 
         requireText(message.reservationId(), "reservationId");
@@ -322,14 +323,15 @@ private ReservationResult recordRejectionIfUnavailable(
         requireText(message.idempotencyKey(), "idempotencyKey");
 
         if (message.quantity() <= 0) {
-            throw new IllegalArgumentException(
+            throw new InvalidReservationMessageException(
                     "Quantity must be greater than zero");
         }
     }
 
     private static void requireText(String value, String field) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(field + " is required");
+            throw new InvalidReservationMessageException(
+                    field + " is required");
         }
     }
 

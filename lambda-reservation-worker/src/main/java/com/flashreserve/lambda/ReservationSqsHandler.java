@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.LambdaRuntime;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSBatchResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
@@ -57,9 +58,7 @@ public class ReservationSqsHandler
             ReservationMessage message = null;
 
             try {
-                message = objectMapper.readValue(
-                        record.getBody(),
-                        ReservationMessage.class);
+                message = parse(record.getBody());
 
                 ReservationResult result =
                         reservationService.reserve(message);
@@ -83,7 +82,13 @@ public class ReservationSqsHandler
             } catch (IdempotencyConflictException ex) {
                 log(logger, "IDEMPOTENCY_CONFLICT", record, message, ex);
                 // Permanent conflict: acknowledge this message; do not retry it.
+            } catch (InvalidReservationMessageException ex) {
+                log(logger, "INVALID_MESSAGE", record, message, ex);
+                // Permanent: retrying can never succeed and would block
+                // this FIFO message group. Acknowledge; do not retry.
             } catch (Exception ex) {
+                // Anything else (DynamoDB errors, unexpected bugs) may be
+                // temporary, so it stays retryable and reaches the DLQ.
                 log(logger, "RETRYABLE_FAILURE", record, message, ex);
 
                 // FIFO: report this message and all later,
@@ -99,6 +104,27 @@ public class ReservationSqsHandler
         }
 
         return new SQSBatchResponse(failures);
+    }
+
+    /*
+     * Jackson errors are converted here, and only here, so that a
+     * JsonProcessingException thrown anywhere else is never mistaken for
+     * an invalid message and silently acknowledged.
+     */
+    private ReservationMessage parse(String body) {
+        if (body == null || body.isBlank()) {
+            throw new InvalidReservationMessageException(
+                    "Message body is empty");
+        }
+
+        try {
+            return objectMapper.readValue(body, ReservationMessage.class);
+        } catch (JsonProcessingException ex) {
+            throw new InvalidReservationMessageException(
+                    "Message body is not a valid reservation: "
+                            + ex.getOriginalMessage(),
+                    ex);
+        }
     }
 
     private static LambdaLogger logger(Context context) {

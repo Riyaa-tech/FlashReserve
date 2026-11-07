@@ -38,6 +38,24 @@ class ReservationServiceTest {
     }
 
     @Test
+    void validationFailuresUseInvalidReservationMessageException() {
+        // The SQS handler relies on this exact type to acknowledge
+        // permanent failures instead of retrying them.
+        assertThrows(
+                InvalidReservationMessageException.class,
+                () -> service.reserve(new ReservationMessage(
+                        "res-1", "event-1", "customer-1", 0, "key-1")));
+        assertThrows(
+                InvalidReservationMessageException.class,
+                () -> service.reserve(new ReservationMessage(
+                        "res-1", " ", "customer-1", 1, "key-1")));
+        assertThrows(
+                InvalidReservationMessageException.class,
+                () -> service.reserve(null));
+        verifyNoInteractions(dynamoDb);
+    }
+
+    @Test
     void rejectsZeroQuantity() {
         ReservationMessage message = new ReservationMessage(
                 "res-1", "event-1", "customer-1", 0, "key-1");
